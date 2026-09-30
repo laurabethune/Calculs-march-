@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Réviser les calculs du marché</title>
+<style>
+:root{--bg:#f6f8fb;--card:#fff;--ink:#12233f;--mute:#5b6b85;--line:#d9e1ec;--navy:#12233f;--or:#e8742a;--tint:#e7eef7;--ok:#1f8a5b;--ko:#c0392b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1626;--card:#16233a;--ink:#e9eef7;--mute:#9fb0c9;--line:#2a3a56;--navy:#0a1220;--tint:#1d2d48;--ok:#4cc38a;--ko:#ff7b6b}}
+:root[data-theme="dark"]{--bg:#0e1626;--card:#16233a;--ink:#e9eef7;--mute:#9fb0c9;--line:#2a3a56;--navy:#0a1220;--tint:#1d2d48;--ok:#4cc38a;--ko:#ff7b6b}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Segoe UI",Calibri,system-ui,sans-serif}
+h1,h2{font-family:Cambria,Georgia,"Times New Roman",serif;line-height:1.2;margin:0}
+header{background:var(--navy);color:#fff;padding:26px 20px 20px}
+header .in,main{max-width:760px;margin:0 auto}
+header h1{font-size:clamp(26px,6vw,36px)}
+header p{margin:8px 0 0;color:#c5d2e6}
+main{padding:20px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+header .tabs{margin-bottom:0}
+.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:8px;font:inherit;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--or);border-color:var(--or);color:#fff}
+article{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:18px}
+article h2{font-size:21px}
+.badge{display:inline-block;font-size:13px;padding:2px 10px;border-radius:99px;background:var(--tint);margin-right:8px;font-family:"Segoe UI",system-ui,sans-serif;font-weight:600}
+.formule{background:var(--tint);border-radius:8px;padding:10px 14px;margin:12px 0}
+.formule b{color:var(--or)}
+.q{margin:12px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input{width:130px;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:var(--bg);color:var(--ink)}
+button.act{padding:9px 14px;border-radius:8px;border:0;font:inherit;cursor:pointer;background:var(--navy);color:#fff}
+button.sec{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button.big{background:var(--or);font-size:18px;padding:12px 22px}
+button:focus-visible,input:focus-visible{outline:3px solid var(--or);outline-offset:2px}
+.fb{margin-top:10px;font-weight:600}
+.fb.ok{color:var(--ok)}.fb.ko{color:var(--ko)}
+.corr{display:none;margin-top:14px;border-left:4px solid var(--or);padding:4px 0 4px 14px}
+.corr.on{display:block}
+.corr p{margin:6px 0}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--navy);color:#fff;border-radius:10px;padding:10px 16px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.bar .t{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.bar .t.low{color:#ff9d8c}
+.res{background:var(--tint);border-radius:12px;padding:18px;margin-bottom:18px;font-size:18px}
+.intro ul{padding-left:20px}
+</style>
+</head>
+<body>
+<header><div class="in">
+<h1>Réviser les calculs du marché</h1>
+<p>Chaque énoncé change à chaque fois. Trois niveaux, et une séance de 30 minutes sans chrono.</p>
+<div class="tabs" id="modes" role="group" aria-label="Mode"></div>
+</div></header>
+<main id="main"></main>
+<script>
+const f=n=>(+n.toFixed(2)).toLocaleString("fr-FR");
+const ri=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pk=a=>a[ri(0,a.length-1)];
+const sh=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+const $=s=>document.querySelector(s);
+const LV=["Facile","Moyen","Difficile"];
+
+const G=[
+{g:"Demande",t:"Ventes en valeur",f:"Quantité × prix unitaire",d:"Les ventes en valeur mesurent le chiffre d'affaires réalisé.",L:[
+()=>{const Q=ri(2,9)*100,P=pk([2,3,4,5]);return{q:`Un magasin vend ${f(Q)} articles à ${P} € l'unité. Calcule le chiffre d'affaires.`,a:Q*P,u:"€",c:`${f(Q)} × ${P} = ${f(Q*P)} €.`,r:`Le magasin réalise ${f(Q*P)} € de chiffre d'affaires.`}},
+()=>{const a=ri(2,6)*100,p=pk([1.5,2.5,3.5]),b=ri(1,4)*100,q=pk([4,6,8]),t=a*p+b*q;return{q:`Un magasin vend ${f(a)} produits A à ${f(p)} € et ${f(b)} produits B à ${q} €. Calcule le chiffre d'affaires total.`,a:t,u:"€",c:`(${f(a)} × ${f(p)}) + (${f(b)} × ${q}) = ${f(a*p)} + ${f(b*q)} = ${f(t)} €.`,r:`Le CA total est de ${f(t)} €, dont ${f(a*p)} € pour le produit A.`}},
+()=>{const Q=ri(3,9)*250,P=pk([1.2,1.6,2.4,3.2]),C=Q*P;return{q:`Un produit a rapporté ${f(C)} € de CA pour ${f(Q)} unités vendues. Calcule le prix unitaire.`,a:P,u:"€",c:`CA = quantité × prix, donc prix = CA ÷ quantité = ${f(C)} ÷ ${f(Q)} = ${f(P)} €.`,r:`Le prix de vente unitaire est de ${f(P)} €.`}}]},
+{g:"Demande",t:"Ventes en volume",f:"Unités, poids ou litres vendus",d:"Les ventes en volume mesurent les quantités achetées (unités, poids, litres), sans tenir compte du prix.",L:[
+()=>{const n=ri(2,9)*100,k=pk([6,12,24]);return{q:`Un magasin vend ${f(n)} packs de ${k} bouteilles. Calcule le volume vendu en bouteilles.`,a:n*k,u:"bouteilles",c:`${f(n)} × ${k} = ${f(n*k)} bouteilles.`,r:`Le magasin écoule ${f(n*k)} bouteilles.`}},
+()=>{const V=ri(2,9)*500,P=pk([2,2.5,4,5]),C=V*P;return{q:`Un producteur réalise ${f(C)} € de CA en vendant son jus à ${f(P)} € le litre. Calcule le volume vendu en litres.`,a:V,u:"litres",c:`Volume = CA ÷ prix = ${f(C)} ÷ ${f(P)} = ${f(V)} litres.`,r:`Le producteur a vendu ${f(V)} litres.`}},
+()=>{const n=ri(2,8)*100,k=pk([2,3,4,6]),L=pk([0.5,1.5,2]),v=n*k*L;return{q:`${f(n)} clients achètent chacun ${k} bouteilles de ${f(L)} L. Calcule le volume total en litres.`,a:v,u:"litres",c:`${f(n)} × ${k} × ${f(L)} = ${f(v)} litres.`,r:`Le volume total vendu est de ${f(v)} litres.`}}]},
+{g:"Demande",t:"Fréquence d'achat",f:"Nb d'achats ÷ nb de clients",d:"La fréquence d'achat correspond au nombre moyen d'achats par client.",L:[
+()=>{const c=pk([200,300,400,500]),x=pk([2,3,4,5]);return{q:`Sur un mois, ${f(c*x)} achats ont été faits par ${f(c)} clients. Calcule la fréquence d'achat.`,a:x,u:"achats/client",c:`${f(c*x)} ÷ ${f(c)} = ${x} achats par client.`,r:`Chaque client achète en moyenne ${x} fois par mois.`}},
+()=>{const c=ri(2,5)*100,x=pk([3,4,5,6]),T=c*x,a=Math.round(T*.3),b=Math.round(T*.3),d=T-a-b;return{q:`Sur un trimestre, une enseigne compte ${f(a)}, ${f(b)} et ${f(d)} achats sur les trois mois, pour ${f(c)} clients. Calcule la fréquence d'achat du trimestre.`,a:x,u:"achats/client",c:`Achats totaux = ${f(a)} + ${f(b)} + ${f(d)} = ${f(T)} ; ${f(T)} ÷ ${f(c)} = ${x}.`,r:`Un client achète en moyenne ${x} fois par trimestre.`}},
+()=>{const c=ri(2,8)*100,x=pk([2.5,3.5,4.5]);return{q:`La fréquence d'achat est de ${f(x)} pour ${f(c)} clients. Calcule le nombre total d'achats.`,a:c*x,u:"achats",c:`Nb d'achats = fréquence × nb de clients = ${f(x)} × ${f(c)} = ${f(c*x)}.`,r:`L'entreprise enregistre ${f(c*x)} achats.`}}]},
+{g:"Demande",t:"Panier moyen",f:"CA ÷ nb de clients",d:"Le panier moyen est la dépense moyenne par passage en caisse.",L:[
+()=>{const n=pk([200,400,500,800]),p=pk([20,25,30,40]);return{q:`Un supermarché réalise ${f(n*p)} € de CA avec ${f(n)} clients. Calcule le panier moyen.`,a:p,u:"€",c:`${f(n*p)} ÷ ${f(n)} = ${p} €.`,r:`Chaque client dépense en moyenne ${p} €.`}},
+()=>{const n=pk([300,400,500]),p=pk([22,25,28,32]),T=n*p,x=Math.round(T*.4/100)*100,y=T-x;return{q:`Un magasin encaisse ${f(x)} € le samedi et ${f(y)} € le dimanche, pour ${f(n)} clients sur les deux jours. Calcule le panier moyen.`,a:p,u:"€",c:`CA total = ${f(x)} + ${f(y)} = ${f(T)} € ; ${f(T)} ÷ ${f(n)} = ${p} €.`,r:`Le panier moyen du week-end est de ${p} €.`}},
+()=>{const n=pk([500,800,1000]),p=pk([30,40,50]),N=p*1.1;return{q:`Le panier moyen est de ${p} € avec ${f(n)} clients. Une animation commerciale le fait progresser de 10 %, le nombre de clients restant stable. Calcule le nouveau CA.`,a:N*n,u:"€",c:`Nouveau panier = ${p} × 1,10 = ${f(N)} € ; CA = ${f(N)} × ${f(n)} = ${f(N*n)} €.`,r:`Le CA passe à ${f(N*n)} € contre ${f(p*n)} € avant l'animation.`}}]},
+{g:"Demande",t:"Taux d'équipement",f:"Biens en service ÷ consommateurs potentiels × 100",d:"Le taux d'équipement est la part des personnes équipées parmi les consommateurs potentiels.",L:[
+()=>{const P=pk([4000,5000,8000,10000]),x=pk([20,40,50,60,75]),e=P*x/100;return{q:`Dans une zone de ${f(P)} foyers, ${f(e)} possèdent un lave-vaisselle. Calcule le taux d'équipement.`,a:x,u:"%",c:`(${f(e)} ÷ ${f(P)}) × 100 = ${x} %.`,r:`${x} % des foyers sont équipés${x>=60?" : le marché approche de la saturation, la demande vient du renouvellement":" : il reste un potentiel de premier équipement"}.`}},
+()=>{const N=pk([20000,40000]),s=pk([40,50,60]),P=N*s/100,x=pk([20,25,30,40]),e=P*x/100;return{q:`Une région compte ${f(N)} habitants, dont ${s} % sont des consommateurs potentiels de lave-linge. ${f(e)} personnes en possèdent un. Calcule le taux d'équipement.`,a:x,u:"%",c:`Consommateurs potentiels = ${f(N)} × ${s} % = ${f(P)} ; (${f(e)} ÷ ${f(P)}) × 100 = ${x} %.`,r:`Le taux d'équipement est de ${x} % : le marché est encore à conquérir.`}},
+()=>{const P=pk([8000,12000,15000]),x=pk([55,65,72,85]),e=P*x/100;return{q:`Le taux d'équipement est de ${x} % pour ${f(P)} consommateurs potentiels. Combien de biens sont en service ?`,a:e,u:"biens",c:`Biens en service = taux × potentiels ÷ 100 = ${x} × ${f(P)} ÷ 100 = ${f(e)}.`,r:`${f(e)} biens sont en service.`}}]},
+{g:"Demande",t:"Taux de pénétration",f:"Utilisateurs ÷ population totale × 100",d:"Le taux de pénétration correspond au rapport entre le nombre d'utilisateurs actuels et le marché potentiel total.",L:[
+()=>{const P=pk([5000,10000,20000]),x=pk([10,15,25,30,40]),u=P*x/100;return{q:`Sur ${f(P)} foyers d'une zone de chalandise, ${f(u)} consomment du café en capsules. Calcule le taux de pénétration.`,a:x,u:"%",c:`(${f(u)} ÷ ${f(P)}) × 100 = ${x} %.`,r:`C'est un taux ${x>=25?"notable":"modeste"}. Il reste un fort potentiel de croissance (${100-x} % de non-utilisateurs).`}},
+()=>{const P=pk([4000,5000,8000]),x=pk([15,20,25,30]),u=P*x/100,a=Math.round(u*.6),b=u-a;return{q:`Une zone compte ${f(P)} foyers. ${f(a)} foyers utilisent le produit en abonnement et ${f(b)} en achat occasionnel. Calcule le taux de pénétration.`,a:x,u:"%",c:`Utilisateurs = ${f(a)} + ${f(b)} = ${f(u)} ; (${f(u)} ÷ ${f(P)}) × 100 = ${x} %.`,r:`Le produit pénètre ${x} % de la zone.`}},
+()=>{const P=pk([10000,20000]),p1=pk([10,15,20]),p2=p1+pk([5,8,10]),u1=P*p1/100,u2=P*p2/100;return{q:`L'an dernier, ${f(u1)} foyers sur ${f(P)} utilisaient le produit. Cette année, ils sont ${f(u2)}. De combien de points le taux de pénétration progresse-t-il ?`,a:p2-p1,u:"points",c:`Avant : ${f(u1)} ÷ ${f(P)} × 100 = ${p1} % ; maintenant : ${f(u2)} ÷ ${f(P)} × 100 = ${p2} % ; écart = ${p2-p1} points.`,r:`Le taux gagne ${p2-p1} points de pénétration (de ${p1} % à ${p2} %).`}}]},
+{g:"Concurrence",t:"Taux d'évolution",f:"(Valeur finale − Valeur initiale) ÷ Valeur initiale × 100",d:"Le taux d'évolution mesure la variation relative entre une valeur initiale et une valeur finale.",L:[
+()=>{const i=ri(2,9)*100,x=pk([10,20,25,50]),v=i*(1+x/100);return{q:`Le CA d'une entreprise passe de ${f(i)} € à ${f(v)} €. Calcule le taux d'évolution.`,a:x,u:"%",c:`(${f(v)} − ${f(i)}) ÷ ${f(i)} × 100 = ${x} %.`,r:`Le CA progresse de ${x} % : l'entreprise est en croissance.`}},
+()=>{const i=ri(2,8)*1000,x=pk([-10,-15,-20,-25]),v=i*(1+x/100);return{q:`Les ventes d'un produit passent de ${f(i)} unités à ${f(v)} unités. Calcule le taux d'évolution.`,a:x,u:"%",c:`(${f(v)} − ${f(i)}) ÷ ${f(i)} × 100 = ${x} %.`,r:`Les ventes reculent de ${-x} % : le signe négatif indique une baisse.`}},
+()=>{const i=pk([240000,360000,480000]),x=pk([12.5,7.5,15]),v=i*(1+x/100);return{q:`Un CA de ${f(i)} € progresse de ${f(x)} %. Calcule le CA final.`,a:v,u:"€",c:`Valeur finale = initiale × (1 + taux ÷ 100) = ${f(i)} × ${f(1+x/100)} = ${f(v)} €.`,r:`Le CA atteint ${f(v)} €, soit ${f(v-i)} € de plus.`}}]},
+{g:"Concurrence",t:"Part de marché",f:"Ventes de l'entreprise ÷ Ventes totales du marché × 100",d:"La part de marché indique le poids de l'entreprise dans les ventes totales du marché.",L:[
+()=>{const T=pk([10,20,50]),x=pk([10,15,20,25,40]),v=T*x/100;return{q:`Une entreprise vend pour ${f(v)} M€ sur un marché de ${T} M€. Calcule sa part de marché.`,a:x,u:"%",c:`(${f(v)} ÷ ${T}) × 100 = ${x} %.`,r:`L'entreprise détient ${x} % du marché.`}},
+()=>{const A=ri(3,6),B=ri(5,9),C=ri(4,8),O=ri(6,10),T=A+B+C+O,x=A/T*100;return{q:`Sur un marché, l'entreprise A vend ${A} M€, B ${B} M€, C ${C} M€ et les autres acteurs ${O} M€ au total. Calcule la part de marché de A (arrondis à 0,1).`,a:+x.toFixed(1),u:"%",c:`Marché total = ${A} + ${B} + ${C} + ${O} = ${T} M€ ; (${A} ÷ ${T}) × 100 ≈ ${f(x)} %.`,r:`A détient environ ${f(x)} % du marché.`}},
+()=>{const T=pk([25,40,50]),x=pk([12,18,22,35]),v=T*x/100;return{q:`Une entreprise a ${x} % de part de marché sur un marché de ${T} M€. Calcule ses ventes.`,a:v,u:"M€",c:`Ventes = part de marché × marché total ÷ 100 = ${x} × ${T} ÷ 100 = ${f(v)} M€.`,r:`L'entreprise réalise ${f(v)} M€ de ventes.`}}]},
+{g:"Concurrence",t:"Part de marché relative",f:"Part de marché de l'entreprise ÷ Part de marché du leader",d:"La part de marché relative compare l'entreprise au leader : au-dessus de 1, elle est leader ; en dessous, elle est derrière lui.",L:[
+()=>{const e=pk([10,12,15,20]),l=pk([20,30,40,60]),x=e/l;return{q:`Une entreprise a ${e} % de part de marché et le leader ${l} %. Calcule la part de marché relative (arrondis à 0,01).`,a:x,u:"",c:`${e} ÷ ${l} ≈ ${f(x)}.`,r:`Le résultat ${x<1?"est inférieur à 1 : l'entreprise n'est pas leader":"est supérieur à 1 : l'entreprise est leader"}.`}},
+()=>{const T=pk([20,40,50]),e=pk([2,3,4,5]),l=pk([6,8,10]),pe=e/T*100,pl=l/T*100,x=pe/pl;return{q:`Sur un marché de ${T} M€, l'entreprise vend ${e} M€ et le leader ${l} M€. Calcule la part de marché relative (arrondis à 0,01).`,a:x,u:"",c:`Part de marché : ${e}÷${T}×100 = ${f(pe)} % ; leader : ${l}÷${T}×100 = ${f(pl)} % ; ${f(pe)} ÷ ${f(pl)} ≈ ${f(x)}.`,r:`L'entreprise pèse ${f(x)} fois le leader : elle est derrière lui.`}},
+()=>{const x=pk([0.4,0.5,0.6,0.8]),l=pk([30,35,40,25]),e=x*l;return{q:`La part de marché relative d'une entreprise est de ${f(x)} et le leader détient ${l} % du marché. Calcule la part de marché de l'entreprise.`,a:e,u:"%",c:`Part de marché = relative × part du leader = ${f(x)} × ${l} = ${f(e)} %.`,r:`L'entreprise détient ${f(e)} % du marché, soit ${f(x*100)} % du poids du leader.`}}]}
+];
+
+const ok=(v,a)=>Math.abs(v-a)<=Math.max(0.011,Math.abs(a)*0.005);
+const num=s=>parseFloat(String(s).replace(/\s/g,"").replace(",","."));
+const corr=e=>`<p><b>Calcul :</b> ${e.c}</p><p><b>Résultat :</b> ${e.r}</p>`;
+
+/* ---------- Modes ---------- */
+let mode="rev",filtre="Tout",lv=G.map(()=>0),timer=null;
+function modes(){const m=$("#modes");m.innerHTML="";[["rev","Réviser"],["exam","Séance 30 min"]].forEach(([k,n])=>{const b=document.createElement("button");b.textContent=n;b.setAttribute("aria-pressed",mode===k);b.onclick=()=>{clearInterval(timer);mode=k;modes();k==="rev"?rev():intro()};m.appendChild(b)})}
+
+/* ---------- Réviser ---------- */
+function rev(){const M=$("#main");M.innerHTML=`<div class="tabs" id="flt"></div><div id="list"></div>`;
+const t=$("#flt");["Tout","Demande","Concurrence"].forEach(n=>{const b=document.createElement("button");b.textContent=n;b.setAttribute("aria-pressed",n===filtre);b.onclick=()=>{filtre=n;rev()};t.appendChild(b)});
+G.forEach((g,i)=>{if(filtre!=="Tout"&&g.g!==filtre)return;const w=document.createElement("article");$("#list").appendChild(w);draw(w,i)})}
+function draw(w,i){const g=G[i],e=g.L[lv[i]]();
+w.innerHTML=`<h2>${g.t}</h2><div class="formule"><b>Formule</b> · ${g.f}</div>
+<div class="tabs">${LV.map((n,k)=>`<button data-l="${k}" aria-pressed="${k===lv[i]}">${n}</button>`).join("")}</div>
+<p class="q">${e.q}</p>
+<div class="row"><input inputmode="decimal" aria-label="Ta réponse" placeholder="Ta réponse"><span>${e.u}</span>
+<button class="act" data-a="v">Vérifier</button><button class="act sec" data-a="c">Correction</button><button class="act sec" data-a="n">Nouvel énoncé</button></div>
+<div class="fb" aria-live="polite"></div>
+<div class="corr"><p><b>Définition :</b> ${g.d}</p>${corr(e)}</div>`;
+const inp=w.querySelector("input"),fb=w.querySelector(".fb");
+const chk=()=>{const v=num(inp.value);if(isNaN(v)){fb.textContent="Entre un nombre.";fb.className="fb fb ko";return}
+if(ok(v,e.a)){fb.textContent="Correct !";fb.className="fb ok"}else{fb.textContent="Pas tout à fait. Relis la formule et réessaie, ou ouvre la correction.";fb.className="fb ko"}};
+w.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{lv[i]=+b.dataset.l;draw(w,i)});
+w.querySelector('[data-a="v"]').onclick=chk;
+w.querySelector('[data-a="c"]').onclick=()=>w.querySelector(".corr").classList.toggle("on");
+w.querySelector('[data-a="n"]').onclick=()=>draw(w,i);
+inp.onkeydown=k=>{if(k.key==="Enter")chk()}}
+
+/* ---------- Séance ---------- */
+function intro(){$("#main").innerHTML=`<article class="intro"><h2>Séance de 30 minutes</h2>
+<ul><li>15 exercices : 5 faciles, 5 moyens, 5 difficiles, dans cet ordre.</li>
+<li>Pas de chrono : tu avances à ton rythme, l'ensemble représente environ 30 minutes de travail.</li>
+<li>Vérifie chaque réponse tout de suite. Si tu ouvres la correction avant d'avoir trouvé, la question ne rapporte pas de point.</li>
+<li>Barème : 1 point (facile), 2 points (moyen), 3 points (difficile), soit 30 points. Les chiffres changent à chaque séance.</li></ul>
+<button class="act big" id="go">Commencer</button></article>`;$("#go").onclick=seance}
+function seance(){const Q=[];[0,1,2].forEach(l=>sh(G.map((_,i)=>i)).slice(0,5).forEach(i=>Q.push({i,l,e:G[i].L[l](),pts:0,done:false,peek:false})));
+$("#main").innerHTML=`<div class="bar"><span id="pg"></span><span id="sc"></span></div><div id="res"></div><div id="qs"></div>`;
+const maj=()=>{const d=Q.filter(q=>q.done).length,s=Q.reduce((a,q)=>a+q.pts,0);
+$("#pg").textContent=`${d} / ${Q.length} faits`;$("#sc").textContent=`${s} / 30 pts`;
+if(d===Q.length){$("#res").innerHTML=`<div class="res"><b>Séance terminée : ${s} / 30</b> (${(s/30*20).toFixed(1).replace(".",",")} / 20)<br><button class="act" id="again" style="margin-top:10px">Nouvelle séance</button></div>`;$("#again").onclick=seance;scrollTo({top:0,behavior:"smooth"})}};
+Q.forEach((q,n)=>{
+if(n%5===0){const h=document.createElement("h2");h.style.margin="22px 0 12px";h.textContent="Niveau "+LV[q.l].toLowerCase();$("#qs").appendChild(h)}
+const g=G[q.i],w=document.createElement("article");
+w.innerHTML=`<h2>${n+1}. ${g.t}</h2>${q.l===0?`<div class="formule"><b>Formule</b> · ${g.f}</div>`:""}
+<p class="q">${q.e.q}</p>
+<div class="row"><input inputmode="decimal" aria-label="Réponse ${n+1}" placeholder="Ta réponse"><span>${q.e.u}</span>
+<button class="act" data-a="v">Vérifier</button><button class="act sec" data-a="c">Correction</button></div>
+<div class="fb" aria-live="polite"></div>
+<div class="corr"><p><b>Définition :</b> ${g.d}</p><p><b>Formule :</b> ${g.f}</p>${corr(q.e)}</div>`;
+$("#qs").appendChild(w);
+const inp=w.querySelector("input"),fb=w.querySelector(".fb"),c=w.querySelector(".corr");
+const chk=()=>{if(q.done&&!q.peek)return;const v=num(inp.value);
+if(isNaN(v)){fb.textContent="Entre un nombre.";fb.className="fb ko";return}
+if(ok(v,q.e.a)){if(q.peek){fb.textContent="Correct, mais sans point : correction consultée.";}else{q.pts=q.l+1;fb.textContent=`Correct ! +${q.l+1} pt${q.l?"s":""}`}
+fb.className="fb ok";q.done=true;inp.disabled=true;c.classList.add("on");maj()}
+else{fb.textContent="Pas tout à fait. Réessaie ou ouvre la correction.";fb.className="fb ko"}};
+w.querySelector('[data-a="v"]').onclick=chk;
+w.querySelector('[data-a="c"]').onclick=()=>{c.classList.add("on");if(!q.done){q.peek=true;q.done=true;maj()}};
+inp.onkeydown=k=>{if(k.key==="Enter")chk()}});
+maj()}
+
+modes();rev();
+</script>
+</body>
+</html>
